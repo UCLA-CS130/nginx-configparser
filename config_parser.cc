@@ -209,9 +209,11 @@ class NginxConfigParser {
             last_token_type == TOKEN_TYPE_END_BLOCK ||
             last_token_type == TOKEN_TYPE_NORMAL) {
           if (last_token_type != TOKEN_TYPE_NORMAL) {
-            config_stack.top()->statements_.emplace_back(new NginxConfigStatement);
+            config_stack.top()->statements_.emplace_back(
+              new NginxConfigStatement);
           }
-          config_stack.top()->statements_.back().get()->tokens_.push_back(token);
+          config_stack.top()->statements_.back().get()->tokens_.push_back(
+            token);
         } else {
           // Error.
           break;
@@ -227,7 +229,8 @@ class NginxConfigParser {
           break;
         }
         NginxConfig* const new_config = new NginxConfig;
-        config_stack.top()->statements_.back().get()->child_block_.reset(new_config);
+        config_stack.top()->statements_.back().get()->child_block_.reset(
+          new_config);
         config_stack.push(new_config);
       } else if (token_type == TOKEN_TYPE_END_BLOCK) {
         if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
