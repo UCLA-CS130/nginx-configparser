@@ -1,0 +1,5 @@
+*.o
+*.a
+config_parser
+config_parser_test
+
