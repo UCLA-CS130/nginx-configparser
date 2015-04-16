@@ -3,6 +3,9 @@
 #include <sstream>
 #include <string>
 
+// As best I can tell, the point of this is to test with a file which is why
+// we don't use TEST_N with NginxStringConfigTest. So I won't make the suggested
+// change here.
 TEST(NginxConfigParserTest, SimpleConfigFromFile) {
   NginxConfigParser parser;
   NginxConfig out_config;
