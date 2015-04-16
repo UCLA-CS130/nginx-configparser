@@ -31,15 +31,6 @@ TEST(NginxConfigStatementTest, ToString) {
     EXPECT_EQ("foo bar;\n", statement.ToString(0));
 }
 
-TEST(NginxConfigParserTest, SimpleTextConfig) {
-   const std::string config_test = "foo bar;";
-   std::stringstream config_stream(config_test);
-   NginxConfigParser parser;
-   NginxConfig config;
-
-   EXPECT_TRUE(parser.Parse(&config_stream, &config));
-}
-
 TEST_F(NginxStringConfigTest, SimpleTextConfig) {
     EXPECT_TRUE(ParseString("foo bar;"));
 }
