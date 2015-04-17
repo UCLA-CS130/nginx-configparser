@@ -9,3 +9,14 @@ TEST(NginxConfigParserTest, SimpleConfig) {
 
   EXPECT_TRUE(success);
 }
+
+TEST(NginxConfigParserTest2, SimpleConfig) {
+  NginxConfigParser parser;
+  NginxConfig out_config;
+
+  bool success = parser.Parse("braket_test", &out_config);
+
+  EXPECT_TRUE(success);
+}
+
+
