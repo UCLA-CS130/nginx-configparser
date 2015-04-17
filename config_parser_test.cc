@@ -23,7 +23,8 @@ protected:
   NginxConfig config;
 };
 
-
+/* unit tests
+*/
 TEST_F(NginxStringConfigTest, SimpleConfig) {
   EXPECT_TRUE(ParseString("foo bar;"));
   EXPECT_EQ(1, config.statements_.size());
