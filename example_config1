@@ -1,0 +1,70 @@
+server {  
+    server_name wiki.bigdinosaur.org;
+    root /var/www-wiki/wiki;
+    index index.html index.php;
+    autoindex off;
+    include conf.sites/wiki-both.conf;
+
+#    Uncomment after installation!
+#    location / {
+#        index index.php5;
+#        rewrite ^/([^?]*)(?:\?(.*))? /index.php5?title=$1&$2 last;
+#    }
+
+    location ~ \.php5?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass php5-fpm-sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+
+    location ~ \.php?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass php5-fpm-sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+}
+
+server {  
+    listen 443 ssl;
+    server_name wiki.bigdinosaur.org;
+    root /var/www-wiki/wiki;
+    index index.php;
+    autoindex off;
+    include conf.sites/wiki-both.conf;
+
+    ssl on;
+    ssl_certificate /path/to/your/ssl/cert.crt;
+    ssl_certificate_key /path/to/your/ssl/private.key; 
+    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:
+        !aNULL:!EDH:!AESGCM;
+    ssl_prefer_server_ciphers on;
+
+#    Uncomment after installation!
+#    location / {
+#        index index.php5;
+#        rewrite ^/([^?]*)(?:\?(.*))? /index.php5?title=$1&$2 last;
+#    }
+
+    location ~ \.php5?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass php5-fpm-sock;
+        fastcgi_param HTTPS on;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on; 
+    }
+
+    location ~ \.php?$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_pass php5-fpm-sock;
+        fastcgi_param HTTPS on;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_intercept_errors on;
+    }
+}
