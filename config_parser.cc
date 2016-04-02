@@ -67,6 +67,8 @@ const char* NginxConfigParser::TokenTypeAsString(TokenType type) {
 NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
                                                            std::string* value) {
   TokenParserState state = TOKEN_STATE_INITIAL_WHITESPACE;
+  int countPrevSingle = 0;
+  int countPrevDouble = 0;
   while (input->good()) {
     const char c = input->get();
     if (!input->good()) {
@@ -109,16 +111,31 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
       case TOKEN_STATE_SINGLE_QUOTE:
         // TODO: the end of a quoted token should be followed by whitespace.
         // TODO: Maybe also define a QUOTED_STRING token type.
-        // TODO: Allow for backslash-escaping within strings.
+        // Allowed for backslash-escaping within strings by adding counter for
+        // both single and double quotes.
+        if (c == '\\'){
+          countPrevSingle = 2;
+        } else {
+          countPrevSingle--;
+        }
         *value += c;
         if (c == '\'') {
-          return TOKEN_TYPE_NORMAL;
+          if (countPrevSingle != 1){
+            return TOKEN_TYPE_NORMAL;
+          }
         }
         continue;
       case TOKEN_STATE_DOUBLE_QUOTE:
+      if (c == '\\'){
+          countPrevDouble = 2;
+        } else {
+          countPrevDouble--;
+        }
         *value += c;
         if (c == '"') {
-          return TOKEN_TYPE_NORMAL;
+          if (countPrevDouble != 1){
+            return TOKEN_TYPE_NORMAL;
+          }
         }
         continue;
       case TOKEN_STATE_TOKEN_TYPE_COMMENT:
@@ -129,7 +146,8 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
         continue;
       case TOKEN_STATE_TOKEN_TYPE_NORMAL:
         if (c == ' ' || c == '\t' || c == '\n' || c == '\t' ||
-            c == ';' || c == '{' || c == '}') {
+            c == ';' || c == '{' || c == '}' || c == '"' || c == '\'') {
+          // Added c == '"' || c == '\'' to if statement to prevent quote errors
           input->unget();
           return TOKEN_TYPE_NORMAL;
         }
@@ -199,8 +217,8 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           new_config);
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
-        // Error.
+      if (last_token_type != TOKEN_TYPE_STATEMENT_END && last_token_type != TOKEN_TYPE_END_BLOCK ) {
+        // Error. Added TOKEN_TYPE_STATEMENT_END as allowable before an end block.
         break;
       }
       config_stack.pop();
