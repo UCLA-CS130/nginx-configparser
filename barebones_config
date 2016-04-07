@@ -1,0 +1,9 @@
+http: {
+	server {
+		location loc1 {
+			if (condition) {
+				line one;
+			}
+		}
+	}
+}
