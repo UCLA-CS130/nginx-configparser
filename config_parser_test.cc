@@ -74,7 +74,7 @@ TEST_F(NginxConfigTest, ToStringMultipleStatements) {
 
 /*****************************************************************
  * Testing Class: NginxConfigParser
- * Number of Tests: 8
+ * Number of Tests: 9
  *****************************************************************/
 class NginxConfigParserTest : public ::testing::Test {
 protected:
@@ -138,6 +138,17 @@ TEST_F(NginxConfigParserTest, ParseNestedBlock) {
     "    eu google.com/eu;\n  }\n}\n";
   ASSERT_TRUE(parseString(config_string));
   EXPECT_EQ(config_string, config_.ToString());
+}
+
+TEST_F(NginxConfigParserTest, ParseComments) {
+  std::string config_string_expected =
+    "server {\n  port 8000;\n  hosts {\n    na google.com;\n"
+    "    eu google.com/eu;\n  }\n}\n";
+  std::string config_string_input =
+    "server {\n  port 8000; # Port number.\n  hosts {\n    "
+    "na google.com;\n    eu google.com/eu;\n  }\n}\n";
+  ASSERT_TRUE(parseString(config_string_input));
+  EXPECT_EQ(config_string_expected, config_.ToString());
 }
 
 TEST_F(NginxConfigParserTest, ParseNonFormatted) {
