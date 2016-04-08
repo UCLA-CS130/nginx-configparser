@@ -11,6 +11,10 @@ TEST(NginxConfigParserTest, SimpleConfig) {
     bool success = parser.Parse("example_config", &out_config);
 
     EXPECT_TRUE(success);
+    EXPECT_EQ(2, out_config.statements_.size()) 
+        << "Didn't get two statements in parent block";
+    EXPECT_EQ(3, out_config.statements_.at(1)->child_block_->statements_.size()) 
+        << "Didn't get three statements in nested block";
 }
 
 TEST(NginxConfigParserTest, ToStringSimple) {
@@ -52,11 +56,22 @@ TEST_F(NginxStringConfigTest, BadConfig) {
 TEST_F(NginxStringConfigTest, NestedConfig) {
     EXPECT_TRUE(ParseString("server { listen 80; }"))
         << "Nested config parsed incorrectly";
+    EXPECT_EQ(1, config_.statements_.size()) 
+        << "Didn't get parent in one statement";
+    EXPECT_EQ(1, config_.statements_.at(0)->child_block_->statements_.size()) 
+        << "Didn't get one statement in nested block";
 }
 
 TEST_F(NginxStringConfigTest, DoubleNestedConfig) {
     EXPECT_TRUE(ParseString("foo { bar { baz aux; } }"))
         << "Double nested config parsed incorrectly";
+    EXPECT_EQ(1, config_.statements_.size()) 
+        << "Didn't get parent in one statement";
+    EXPECT_EQ(1, config_.statements_.at(0)->child_block_->statements_.size()) 
+        << "Didn't get one statement in nested block";
+    EXPECT_EQ(1, config_.statements_.at(0)->child_block_->statements_.at(0)->
+                child_block_->statements_.size()) 
+        << "Didn't get one statement in second nested block";
 }
 
 TEST_F(NginxStringConfigTest, MultiSpaceConfig) {
