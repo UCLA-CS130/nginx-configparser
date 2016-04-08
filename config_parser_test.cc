@@ -6,7 +6,6 @@
 #include "gtest/gtest.h"
 #include "config_parser.h"
 
-
 /* Test example file. */
 TEST(NginxConfigParserTest, SimpleConfigFile) {
     NginxConfigParser parser;
@@ -16,7 +15,6 @@ TEST(NginxConfigParserTest, SimpleConfigFile) {
 
     EXPECT_TRUE(success);
 }
-
 
 /* Class provides ability to create tests easily without repeating code. */
 class NginxStringConfigTest : public ::testing::Test {
@@ -29,7 +27,6 @@ class NginxStringConfigTest : public ::testing::Test {
     NginxConfigParser parser_;
     NginxConfig out_config_;
 };
-
 
 /* Tests one word. */
 TEST_F(NginxStringConfigTest, SingleWordConfig) {
@@ -93,14 +90,10 @@ TEST_F(NginxStringConfigTest, NestedLoopConfig) {
     EXPECT_EQ(1, out_config_.statements_.size());
     EXPECT_EQ("server", out_config_.statements_.at(0)->tokens_.at(0));
 
-    // std::shared_ptr<NginxConfigStatement> state = 
-    //     out_config_.statements_.at(0)->child_block_->statements_.at(0);
-
-    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->statements_.at(0)->tokens_.size());
-    EXPECT_EQ("foo", out_config_.statements_.at(0)->child_block_->statements_.at(0)->tokens_.at(0));
-    // std::cout << out_config_.statements_.at(0)->child_block_->ToString(0) << std::endl;
-    // std::cout << out_config_.statements_.at(0)->child_block_->statements_.at(0)->tokens_.at(0) << std::endl;
-    // EXPECT_EQ("foo", out_config_.statements_.at(0)->child_b_.at(1));
+    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->tokens_.size());
+    EXPECT_EQ("foo", out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->tokens_.at(0));
 }
 
 /* Test multiple statements in block. */
@@ -110,19 +103,42 @@ TEST_F(NginxStringConfigTest, NestedLoopMultipleStatementsConfig) {
     EXPECT_EQ(1, out_config_.statements_.size());
     EXPECT_EQ("server", out_config_.statements_.at(0)->tokens_.at(0));
 
-    // NginxConfig *child_block = out_config_.statements_.at(0)->child_block_;
-    EXPECT_EQ(2, out_config_.statements_.at(0)->child_block_->statements_.size());
-    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->statements_.at(0)->tokens_.size());
-    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->statements_.at(1)->tokens_.size());
+    EXPECT_EQ(2, out_config_.statements_.at(0)->child_block_->
+        statements_.size());
+    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->tokens_.size());
+    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->
+        statements_.at(1)->tokens_.size());
 
-    EXPECT_EQ("foo", out_config_.statements_.at(0)->child_block_->statements_.at(0)->tokens_.at(0));
-    EXPECT_EQ("bar", out_config_.statements_.at(0)->child_block_->statements_.at(1)->tokens_.at(0));
+    EXPECT_EQ("foo", out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->tokens_.at(0));
+    EXPECT_EQ("bar", out_config_.statements_.at(0)->child_block_->
+        statements_.at(1)->tokens_.at(0));
 }
 
-// Test multiple entries in Nested Loop
+/* Test multiple single blocks. */
+TEST_F(NginxStringConfigTest, BadNestedLoopMultipleBlocksConfig) {
+    EXPECT_FALSE(ParseString("server { foo; } { bar; }"));
+}
 
-// Test Comments
+/* Test double nested block statements. */
+TEST_F(NginxStringConfigTest, DoubleNestedLoopConfig) {
+    EXPECT_TRUE(ParseString("server { foo; { bar; } }"));
 
-// Test new line
+    EXPECT_EQ(1, out_config_.statements_.size());
+    EXPECT_EQ("server", out_config_.statements_.at(0)->tokens_.at(0));
 
-// Test DoubleNestedLoop
+    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->tokens_.size());
+    EXPECT_EQ("foo", out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->tokens_.at(0));
+    EXPECT_EQ(1, out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->child_block_->statements_.at(0)->tokens_.size());
+    EXPECT_EQ("bar", out_config_.statements_.at(0)->child_block_->
+        statements_.at(0)->child_block_->statements_.at(0)->tokens_.at(0));
+}
+
+/* Test double nested block incorrect brackets. */
+TEST_F(NginxStringConfigTest, BadDoubleNestedLoopConfig) {
+    EXPECT_FALSE(ParseString("server { foo; bar; } }"));
+}
