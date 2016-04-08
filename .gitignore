@@ -1,0 +1,4 @@
+# I am using my partner, Eve's, gitignore
++*.o
+ +*.a
+ +config_parser_test
