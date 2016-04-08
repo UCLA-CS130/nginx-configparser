@@ -20,7 +20,6 @@ TEST_F(NginxConfigParserTest, SimpleConfig) {
 
 TEST_F(NginxConfigParserTest, SimpleConfigFakeFile) {
   bool success = testSuccess("this_is_not_a_file");
-
   // Shouldn't work on fake files
   EXPECT_FALSE(success);
 }
