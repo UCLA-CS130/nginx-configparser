@@ -1,0 +1,11 @@
+location /path/to/MoinMoin/web/static/htdocs {
+    alias /path/to/MoinMoin/web/static/htdocs;
+}
+
+location /wiki {
+    gzip off;
+    include uwsgi_params;
+    uwsgi_param SCRIPT_NAME /wiki;
+    uwsgi_modifier1 30;
+    uwsgi_pass unix:/path/to/uwsgi.socket;
+}
