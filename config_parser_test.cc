@@ -25,8 +25,6 @@ TEST_F(NginxStringConfigTest, EmptyConfig) {
 	EXPECT_FALSE(ParseString("")) << "Got empty string wrong";
 }
 
-
-
 TEST(NginxConfigParserTest, ExampleConfig) {
 	NginxConfigParser parser;
 	NginxConfig out_config;
