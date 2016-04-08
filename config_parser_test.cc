@@ -25,24 +25,46 @@ TEST_F(NginxStringConfigTest, EmptyConfig) {
 	EXPECT_FALSE(ParseString("")) << "Got empty string wrong";
 }
 
-TEST_F(NginxStringConfigTest, BracketConfig) {
-	EXPECT_TRUE(ParseString("hello world;")) << "Got closed bracket wrong";
+
+
+TEST(NginxConfigParserTest, ExampleConfig) {
+	NginxConfigParser parser;
+	NginxConfig out_config;
+
+	bool success = parser.Parse("example_config", &out_config);
+	EXPECT_TRUE(success) << "Got simple example config wrong";
 }
+
+TEST(NginxConfigParserTest, MismatchedBracketConfig) {
+	NginxConfigParser parser;
+	NginxConfig out_config;
+
+	bool success = parser.Parse("example_config2", &out_config);
+	EXPECT_FALSE(success) << "Got extra open bracket wrong";
+}
+
+TEST(NginxConfigParserTest, MismatchedBracketConfig2) {
+	NginxConfigParser parser;
+	NginxConfig out_config;
+
+	bool success = parser.Parse("example_config3", &out_config);
+	EXPECT_FALSE(success) << "Got extra closed bracket wrong";
+}
+
+
 
 TEST(NginxConfigParserTest, ActiveCollabConfig) {
 	NginxConfigParser parser;
 	NginxConfig out_config;
 
 	bool success = parser.Parse("activecollab_config", &out_config);
-	EXPECT_TRUE(success);
+	EXPECT_TRUE(success) << "Got example config ActiveCollab wrong";
 }
-
 
 TEST(NginxConfigParserTest, MoinMoinConfig) {
 	NginxConfigParser parser;
 	NginxConfig out_config;
 
-	bool success = parser.Parse("activecollab_config", &out_config);
-	EXPECT_TRUE(success);
+	bool success = parser.Parse("MoinMoin", &out_config);
+	EXPECT_TRUE(success) << "Got example config MoinMoin wrong";
 }
-

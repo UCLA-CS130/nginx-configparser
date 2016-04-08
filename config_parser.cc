@@ -200,10 +200,15 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
-        last_token_type != TOKEN_TYPE_END_BLOCK ) {
+        last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }
+      if(config_stack.top() == config) {
+        // Error
+        break;
+      }
+      
       config_stack.pop();
     } else if (token_type == TOKEN_TYPE_EOF) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
@@ -211,6 +216,10 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
+      if(config_stack.top() != config) {
+        break;
+      }
+
       return true;
     } else {
       // Error. Unknown token.
