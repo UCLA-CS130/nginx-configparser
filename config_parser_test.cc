@@ -74,7 +74,7 @@ TEST_F(NginxConfigTest, ToStringMultipleStatements) {
 
 /*****************************************************************
  * Testing Class: NginxConfigParser
- * Number of Tests: 9
+ * Number of Tests: 10
  *****************************************************************/
 class NginxConfigParserTest : public ::testing::Test {
 protected:
@@ -158,6 +158,56 @@ TEST_F(NginxConfigParserTest, ParseNonFormatted) {
   std::string config_string_input =
     "server{\nport 8000;\nhosts{na google.com;\neu "
     "google.com/eu;}}";
+  ASSERT_TRUE(parseString(config_string_input));
+  EXPECT_EQ(config_string_expected, config_.ToString());
+}
+
+TEST_F(NginxConfigParserTest, FullConfigFileTest){
+  std::string config_string_expected =
+    "server {\n"
+    "  listen 80;\n"
+    "  server_name example.com ww.example.com;\n"
+    "  root /usr/local/www/example.com;\n"
+    "  access_log /var/log/nginx/example.access.log;\n"
+    "  error_log /var/log/nginx/example.error.log;\n"
+    "  location {\n"
+    "    try_files $uri $uri/ /index.php;\n"
+    "  }\n"
+    "  location \\search {\n"
+    "    limit_req zone=kbeezieone burst=3 nodelay;\n"
+    "    rewrite ^ /index.php;\n"
+    "  }\n"
+    "  fastcgi_intercept_errors off;\n"
+    "  location ~* \\.(?:ico|css|js|gif|jpe?g|png)$ {\n"
+    "    expires max;\n"
+    "    add_header Pragma public;\n"
+    "    add_header Cache-Control \"public, must-revalidate, proxy-revalidate\";\n"
+    "  }\n"
+    "  include php.conf;\n"
+    "}\n";
+  std::string config_string_input =
+    "# From http://kbeezie.com/nginx-configuration-examples/\n"
+    "server {\n"
+    "  listen 80;\n\n"
+    "  server_name example.com ww.example.com;\n\n"
+    "  root /usr/local/www/example.com;\n\n"
+    "  access_log /var/log/nginx/example.access.log;\n"
+    "  error_log /var/log/nginx/example.error.log;\n\n"
+    "  location {\n"
+    "    try_files $uri $uri/ /index.php;\n"
+    "  }\n\n"
+    "  location \\search {\n"
+    "    limit_req zone=kbeezieone burst=3 nodelay;\n"
+    "    rewrite ^ /index.php;\n"
+    "  }\n\n"
+    "  fastcgi_intercept_errors off;\n\n"
+    "  location ~* \\.(?:ico|css|js|gif|jpe?g|png)$ {\n"
+    "    expires max;\n"
+    "    add_header Pragma public;\n"
+    "    add_header Cache-Control \"public, must-revalidate, proxy-revalidate\";\n"
+    "  }\n\n"
+    "  include php.conf;\n"
+    "}\n";
   ASSERT_TRUE(parseString(config_string_input));
   EXPECT_EQ(config_string_expected, config_.ToString());
 }
