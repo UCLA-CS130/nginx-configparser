@@ -100,6 +100,11 @@ TEST_F(NginxStringConfigTest, ToString){
 // More complex test cases (Full configuration files)
 TEST_F(NginxStringConfigTest, ComplexConfigs) {  
   	EXPECT_TRUE(ParseFile("example_config")) << "Didn't parse example_config successfully";
+  	EXPECT_EQ(2, config_.statements_.size()) 
+  		<< "wrong number of statements";
+  	EXPECT_EQ("foo", config_.statements_.at(0)->tokens_.at(0)) 
+  		<< "foo was not first token, as expected";
+  	
   	EXPECT_TRUE(ParseFile("long_example_config")) 
   		<< "Didn't parse long_example_config successfully";
   	
