@@ -1,0 +1,7 @@
+*.o 
+*.a
+config_parser 
+*.dSYM
+*.DS_Store
+*.swp
+config_parser_test
