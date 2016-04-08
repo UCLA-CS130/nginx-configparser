@@ -61,4 +61,11 @@ TEST_F(NginxStringConfigTest, WrongDoubleNestedConfig2) {
 	EXPECT_FALSE(ParseString("foo { bar baz aux; } }")) << "Second wrong double nested config parsed successfully.";
 }
 
+TEST_F(NginxStringConfigTest, NginxConfigFileTest) {
+
+	bool success = parser_.Parse("nginx_config", &config_);
+
+  	EXPECT_TRUE(success) << "nginx_config file did not parse successfully";
+}
+
 
