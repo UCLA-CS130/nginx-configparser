@@ -58,3 +58,22 @@ TEST_F(NginxStringConfigTest, DoubleNestedConfig) {
     EXPECT_TRUE(ParseString("foo { bar { baz aux; } }"))
         << "Double nested config parsed incorrectly";
 }
+
+TEST_F(NginxStringConfigTest, MultiSpaceConfig) {
+    EXPECT_TRUE(ParseString("foo         bar;"))
+        << "Multiple spaces parsed incorrectly";
+}
+
+TEST_F(NginxStringConfigTest, MismatchedBracketsConfig) {
+    EXPECT_FALSE(ParseString("foo { listen 80; }} "))
+        << "Parsed unbalanced correctly";
+}
+
+TEST(NginxConfigParserTest, CommentedConfig) {
+    NginxConfigParser parser;
+    NginxConfig out_config;
+
+    bool success = parser.Parse("commented_config", &out_config);
+
+    EXPECT_TRUE(success);
+}
