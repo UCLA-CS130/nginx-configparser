@@ -45,43 +45,63 @@ TEST_F(NginxStringConfigTest, Nested){
   	// Test nested config
 	EXPECT_TRUE(ParseString("server {listen 80;}")) 
 		<< "Didn't parse nested config successfully";
+	// Check the nested statement
 	EXPECT_EQ(1, config_.statements_.size()) 
 		<< "nested config was not parsed as one statement";
-		
 	EXPECT_EQ(2, config_.statements_.at(0)->child_block_->statements_.at(0)
 		->tokens_.size())
 		<< "There should be 2 tokens in the child block";
 }
 
+TEST_F(NginxStringConfigTest, DoubleNested){
+  	// Test nested config
+	EXPECT_TRUE(ParseString("foo {bar {baz qux; } }")) 
+		<< "Didn't parse double nested config successfully";
+	// Check 1st level of the nested statement
+	EXPECT_EQ(1, config_.statements_.size()) 
+		<< "nested config was not parsed as one statement";
+	EXPECT_EQ(1, config_.statements_.at(0)->child_block_->statements_.at(0)
+		->tokens_.size())
+		<< "There should be 1 tokens in the child block";
+	// Check 2nd level of the nested statement
+	EXPECT_EQ(1, config_.statements_.at(0)->child_block_->statements_.at(0)
+		->child_block_->statements_.size())
+		<< "2nd nested config not parsed as one statement";
+		
+	EXPECT_EQ(2, config_.statements_.at(0)->child_block_->statements_.at(0)
+		->child_block_->statements_.at(0)->tokens_.size())
+		<< "There should be 2 tokens in the second nested block -- fuck you!!";
+}
+
+TEST_F(NginxStringConfigTest, MismatchBracket){
+	EXPECT_FALSE(ParseString("server {listen 80;}}")) 
+		<< "Didn't catch the mismatch error successfully";
+
+}
+
+TEST_F(NginxStringConfigTest, Comment){
+	EXPECT_FALSE(ParseString("# This is a comment!!!!")) 
+		<< "Didn't parse comment successfully";
+  	EXPECT_EQ(0, config_.statements_.size()) 
+  		<< "comment was incorrectly recognized as a statement";
+}
+
+
+// Testing NginxConfig's tosString also tests NginxConfigStatement's toString.
+// Got the idea to do this test from my partner
+TEST_F(NginxStringConfigTest, ToString){
+	EXPECT_TRUE(ParseString("server {listen 80;}"));
+  	EXPECT_EQ("server {\n  listen 80;\n}\n", config_.ToString()) 
+  		<< "ToString function does not work";
+}
 
 
 
-
-
-// More complex test cases
-
-/*
+// More complex test cases (Full configuration files)
 TEST_F(NginxStringConfigTest, ComplexConfigs) {  
   	EXPECT_TRUE(ParseFile("example_config")) << "Didn't parse example_config successfully";
   	EXPECT_TRUE(ParseFile("long_example_config")) 
   		<< "Didn't parse long_example_config successfully";
   	
 }
-*/
 
-/*
-
-
-
-// test_f for nested config
-//server {listen 80;}
-// true
-
-
-
-//test_f for double nested
-// parse foo {bar {baz qux; } }
-
-
-
-*/
