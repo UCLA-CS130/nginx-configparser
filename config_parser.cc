@@ -155,7 +155,8 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
-    printf ("%s: %s\n", TokenTypeAsString(token_type), token.c_str());
+    // printf ("%s: %s\n", TokenTypeAsString(token_type),
+    //	    token.c_str());
     if (token_type == TOKEN_TYPE_ERROR) {
       break;
     }
@@ -199,7 +200,8 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           new_config);
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
+      if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
+	  last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }
@@ -209,6 +211,10 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
+      }
+      if (config_stack.size() != 1) {
+	printf ("Mismatched blocks in configurations.\n");
+	return false;
       }
       return true;
     } else {
