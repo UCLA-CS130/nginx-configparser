@@ -73,3 +73,9 @@ TEST_F(NginxStringConfigTest, BlockEndWithoutBlockStart){
   EXPECT_FALSE(ParseString("hello;}")) << "Allowed end of block without beginning of block";
 
 }
+
+TEST_F(NginxStringConfigTest, AdjacentBraces){ //Thanks to Jessica for this.
+
+  EXPECT_TRUE(ParseString("mmm {bop {shoobydooby;}}")) << "Did not allow adjacent close braces.";
+  EXPECT_FALSE(ParseString("mmm {{bop shoobydooby;}}")) << "Allowed adjacent open braces.";
+}
