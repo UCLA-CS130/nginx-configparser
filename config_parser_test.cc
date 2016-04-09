@@ -43,3 +43,33 @@ TEST_F(NginxStringConfigTest, WeirdBrackets){
   EXPECT_FALSE(ParseString("thing1 thing2{beep boop;};")) << "weird brackets allowed?";
 
 }
+
+TEST_F(NginxStringConfigTest, ExtraSpaces){
+
+  EXPECT_TRUE(ParseString("a b      ;")) << "Did not allow extra spaces";
+
+}
+
+TEST_F(NginxStringConfigTest, ExtraReturnsAtTheEnd){
+
+  EXPECT_TRUE(ParseString("blah;\n\n\n\n\n")) << "Did not allow extra returns at the end of config";
+
+}
+
+TEST_F(NginxStringConfigTest, TabsInConfig){
+
+  EXPECT_TRUE(ParseString("hello	world;")) << "Did not allow tab in statement";
+
+}
+
+TEST_F(NginxStringConfigTest, SpacesInQuotes){
+
+  EXPECT_TRUE(ParseString("drinks    \"banana shake\" \"orange juice\" \"red wine\";")) << "Did not allow spaces in quotes";
+
+}
+
+TEST_F(NginxStringConfigTest, BlockEndWithoutBlockStart){
+
+  EXPECT_FALSE(ParseString("hello;}")) << "Allowed end of block without beginning of block";
+
+}
