@@ -1,6 +1,2 @@
 language: cpp
 script: ./build_tests.sh && ./config_parser_test
-addons:
-  apt:
-    packages:
-    - libboost-all-dev
