@@ -123,6 +123,10 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
         continue;
       case TOKEN_STATE_TOKEN_TYPE_COMMENT:
         if (c == '\n' || c == '\r') {
+          //return TOKEN_TYPE_COMMENT;
+          return TOKEN_TYPE_NORMAL;
+        }
+        else {
           return TOKEN_TYPE_COMMENT;
         }
         *value += c;
@@ -168,23 +172,27 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
     if (token_type == TOKEN_TYPE_START) {
       // Error.
       break;
-    } else if (token_type == TOKEN_TYPE_NORMAL) {
+    } 
+    else if (token_type == TOKEN_TYPE_NORMAL) {
       if (last_token_type == TOKEN_TYPE_START ||
           last_token_type == TOKEN_TYPE_STATEMENT_END ||
           last_token_type == TOKEN_TYPE_START_BLOCK ||
           last_token_type == TOKEN_TYPE_END_BLOCK ||
-          last_token_type == TOKEN_TYPE_NORMAL) {
+          last_token_type == TOKEN_TYPE_NORMAL ||
+          last_token_type == TOKEN_TYPE_COMMENT) {
         if (last_token_type != TOKEN_TYPE_NORMAL) {
           config_stack.top()->statements_.emplace_back(
               new NginxConfigStatement);
         }
         config_stack.top()->statements_.back().get()->tokens_.push_back(
             token);
-      } else {
+      } 
+      else {
         // Error.
         break;
       }
-    } else if (token_type == TOKEN_TYPE_STATEMENT_END) {
+    } 
+    else if (token_type == TOKEN_TYPE_STATEMENT_END) {
       if (last_token_type != TOKEN_TYPE_NORMAL) {
         // Error.
         break;
@@ -199,12 +207,17 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
           new_config);
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
-        // Error.
-        break;
-      }
-      config_stack.pop();
-    } else if (token_type == TOKEN_TYPE_EOF) {
+        if (last_token_type == TOKEN_TYPE_STATEMENT_END ||
+            last_token_type == TOKEN_TYPE_END_BLOCK) {
+          config_stack.pop();
+        }
+        else {
+          // Error.
+          break;
+        }
+      } 
+
+      else if (token_type == TOKEN_TYPE_EOF) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
