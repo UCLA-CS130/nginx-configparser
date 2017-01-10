@@ -31,3 +31,7 @@
 *.exe
 *.out
 *.app
+
+# Exectables for this project
+config_parser
+config_parser_test
