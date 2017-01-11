@@ -1,0 +1,7 @@
+# Ignore build and test output
+config_parser
+config_parser_test
+libgtest.a
+
+# Ignore macOS debugging symbols
+config_parser.dSYM*
