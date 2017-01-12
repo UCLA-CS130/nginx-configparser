@@ -1,0 +1,7 @@
+.cproject
+.project
+config_parser
+.config_parser.cc.swp
+config_parser_test
+*.o
+*.a
