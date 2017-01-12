@@ -32,6 +32,9 @@
 *.out
 *.app
 
+# Debug files
+*.dSYM
+
 # Exectables for this project
 config_parser
 config_parser_test
