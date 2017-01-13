@@ -76,3 +76,7 @@ TEST_F(NginxStringConfigTest, MultipleBlockConfig) {
 TEST_F(NginxStringConfigTest, EmbeddedBlockConfig) {
   EXPECT_TRUE(ParseString("server { server2 { listen 80; } }"));
 }
+
+TEST_F(NginxStringConfigTest, EmptyConfig) {
+  EXPECT_TRUE(ParseString(""));
+}
