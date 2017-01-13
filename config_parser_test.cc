@@ -78,3 +78,9 @@ TEST(NginxConfigTest, ToString) {
   statement.tokens_.push_back("bar");
   EXPECT_EQ(statement.ToString(0), "foo bar;\n");
 }
+
+TEST(NginxConfigParser, DoubleVhostConfig) {
+  NginxConfigParser parser;
+  NginxConfig out_config_;
+  EXPECT_TRUE(parser.Parse("two_hosts_config", &out_config_));
+}
