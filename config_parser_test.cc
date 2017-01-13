@@ -1,25 +1,51 @@
-#include <iostream>
+#include <sstream>
+#include <string>
+
 #include "config_parser.h"
 #include "gtest/gtest.h"
 
-// Test fixture to hold parser and parsed result
-// Fresh fixture instances are created for every test case
-class NginxConfigParserTest : public ::testing::Test {
-protected:
-    // No SetUp or TearDown required here
-    NginxConfigParser parser;
-    NginxConfig out_config;
-};
+// NginxConfigParser parses a config file to produce an NginxConfig
+// An NginxConfig consists of 1 or more NginxConfigStatement's,
+// which may in turn have a nested NginxConfig.
 
-TEST_F(NginxConfigParserTest, SimpleConfig) {
-  bool success = parser.Parse("example_config", &out_config);
-  std::cerr << out_config.ToString() << std::endl;
-
-  ASSERT_TRUE(success);
+// Test NginxConfigStatement::ToString()
+TEST(NginxConfigTest, ToStringTokens) {
+  NginxConfigStatement statement;
+  statement.tokens_.push_back("foo");
+  statement.tokens_.push_back("bar");
+  EXPECT_EQ(statement.ToString(0), "foo bar;\n");
 }
 
-TEST_F(NginxConfigParserTest, EmptyConfig) {
-    bool failure = parser.Parse("", &out_config);
+// Test NginxConfigParser::Parse() with config strings
+// (as opposed to full-on files)
+class NginxStringConfigTest : public ::testing::Test {
+protected:
+  // Helper method to pass arbitrary strings into the parser
+  bool ParseString(const std::string config_string) {
+    std::stringstream config_stream(config_string);
+    return parser_.Parse(&config_stream, &out_config_);
+  }
 
-    ASSERT_FALSE(failure);
+  NginxConfigParser parser_;
+  NginxConfig out_config_;
+};
+
+// Check the internal representation of "foo bar;"
+TEST_F(NginxStringConfigTest, AnotherSimpleConfig) {
+  EXPECT_TRUE(ParseString("foo bar;"));
+  EXPECT_EQ(1, out_config_.statements_.size())
+    << "Config has one statement";
+  EXPECT_EQ("foo", out_config_.statements_[0]->tokens_[0]);
+}
+
+// Invalid config should fail (missing semicolon)
+TEST_F(NginxStringConfigTest, InvalidConfig) {
+  EXPECT_FALSE(ParseString("foo bar"));
+}
+
+// TODO: Unbalanced {} should not parse
+// There is at least 1 other bug
+TEST_F(NginxStringConfigTest, NestedConfig) {
+  EXPECT_TRUE(ParseString("server { listen 80; }"));
+  // TODO: Test the contents of out_config_;
 }
