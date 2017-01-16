@@ -8,13 +8,6 @@
 // An NginxConfig consists of 1 or more NginxConfigStatement's,
 // which may in turn have a nested NginxConfig.
 
-TEST(NginxConfigTest, ToString) {
-  NginxConfigStatement statement;
-  statement.tokens_.push_back("foo");
-  statement.tokens_.push_back("bar");
-  EXPECT_EQ(statement.ToString(0), "foo bar;\n");
-}
-
 // Test NginxConfigParser::Parse() with config strings
 // (as opposed to full-on files)
 class NginxStringConfigTest : public ::testing::Test {
@@ -75,4 +68,13 @@ TEST_F(NginxStringConfigTest, BlankConfig) {
 
 TEST_F(NginxStringConfigTest, CommentsOnlyConfig) {
   EXPECT_FALSE(ParseString("# This comment does nothing"));
+}
+
+// Whole-module checks
+
+TEST(NginxConfigTest, ToString) {
+  NginxConfigStatement statement;
+  statement.tokens_.push_back("foo");
+  statement.tokens_.push_back("bar");
+  EXPECT_EQ(statement.ToString(0), "foo bar;\n");
 }
