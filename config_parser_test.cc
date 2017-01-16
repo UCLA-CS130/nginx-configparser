@@ -31,21 +31,32 @@ protected:
 };
 
 // Check the internal representation of "foo bar;"
+// TODO: rename tests to be systematic and meaningful
 TEST_F(NginxStringConfigTest, AnotherSimpleConfig) {
   EXPECT_TRUE(ParseString("foo bar;"));
   EXPECT_EQ(1, out_config_.statements_.size())
-    << "Config has one statement";
+    << "Config should have exactly one statement";
   EXPECT_EQ("foo", out_config_.statements_[0]->tokens_[0]);
 }
 
-// Invalid config should fail (missing semicolon)
-TEST_F(NginxStringConfigTest, InvalidConfig) {
+TEST_F(NginxStringConfigTest, MissingSemicolon) {
   EXPECT_FALSE(ParseString("foo bar"));
 }
 
-// TODO: Unbalanced {} should not parse
-// There is at least 1 other bug
+// Single statement, but it should have an NginxConfig child_block_
 TEST_F(NginxStringConfigTest, NestedConfig) {
   EXPECT_TRUE(ParseString("server { listen 80; }"));
-  // TODO: Test the contents of out_config_;
+  EXPECT_EQ(1, out_config_.statements_.size());
+  EXPECT_TRUE(out_config_.statements_[0]->child_block_.get() != nullptr)
+    << "Child block should exist for nested NginxConfig";
+
+  EXPECT_EQ(2, out_config_.statements_[0]->child_block_
+                                         ->statements_[0]->tokens_.size())
+    << "Child block should be parsed properly for nested NginxConfig";
 }
+
+// TODO: Unmatched curly braces {}: +1 for {, -1 for }
+// TODO: Comments in a config file: # This is a comment
+// TODO: 2 levels of nesting: foo { bar { choo }}
+// TODO: There may be other bugs
+
