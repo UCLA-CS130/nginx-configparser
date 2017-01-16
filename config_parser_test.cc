@@ -67,7 +67,16 @@ TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesNestedOpening) {
   EXPECT_FALSE(ParseString("server { location /  expires 30d; } }"));
 }
 
-// TODO: A blank config or one with only comments is a useless config
-// TODO: 2 levels of nesting: foo { bar { choo }}
+// A blank config or one with only comments is a useless config
+TEST_F(NginxStringConfigTest, BlankConfig) {
+  EXPECT_FALSE(ParseString(""));
+}
+
+TEST_F(NginxStringConfigTest, CommentsOnlyConfig) {
+  EXPECT_FALSE(ParseString("# This comment does nothing"));
+}
+
+// TODO: Unmatched quotes, single and double
+// TODO: 2 levels of nesting: foo { bar { choo } }
 // TODO: There may be other bugs
 
