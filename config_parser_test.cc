@@ -47,7 +47,7 @@ TEST_F(NginxConfigParser_Test, Comment) {
 }
 
 TEST_F(NginxConfigParser_Test, NestedBlock) {
-	EXPECT_TRUE(parse_test_str("{server; \nListen 80;\n name {abcd;}\n foo {bar;}}"));
+	EXPECT_TRUE(parse_test_str("foobar {server; \nListen 80;\n name {abcd;}\n root {foobar;}}"));
 }
 
 TEST_F(NginxConfigParser_Test, flippedBrackets) {
