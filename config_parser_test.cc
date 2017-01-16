@@ -8,8 +8,7 @@
 // An NginxConfig consists of 1 or more NginxConfigStatement's,
 // which may in turn have a nested NginxConfig.
 
-// Test NginxConfigStatement::ToString()
-TEST(NginxConfigTest, ToStringTokens) {
+TEST(NginxConfigTest, ToString) {
   NginxConfigStatement statement;
   statement.tokens_.push_back("foo");
   statement.tokens_.push_back("bar");
@@ -32,10 +31,12 @@ protected:
 
 // Check the internal representation of "foo bar;"
 // TODO: rename tests to be systematic and meaningful
-TEST_F(NginxStringConfigTest, AnotherSimpleConfig) {
+TEST_F(NginxStringConfigTest, StatementsAndTokensState) {
   EXPECT_TRUE(ParseString("foo bar;"));
   EXPECT_EQ(1, out_config_.statements_.size())
-    << "Config should have exactly one statement";
+    << "Config should have exactly 1 statement";
+  EXPECT_EQ(2, out_config_.statements_[0]->tokens_.size())
+    << "Config should have exactly 2 tokens in its 1st statement";
   EXPECT_EQ("foo", out_config_.statements_[0]->tokens_[0]);
 }
 
@@ -75,8 +76,3 @@ TEST_F(NginxStringConfigTest, BlankConfig) {
 TEST_F(NginxStringConfigTest, CommentsOnlyConfig) {
   EXPECT_FALSE(ParseString("# This comment does nothing"));
 }
-
-// TODO: Unmatched quotes, single and double
-// TODO: 2 levels of nesting: foo { bar { choo } }
-// TODO: There may be other bugs
-
