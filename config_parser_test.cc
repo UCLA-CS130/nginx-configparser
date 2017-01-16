@@ -50,24 +50,29 @@ TEST_F(NginxStringConfigTest, NestedConfig) {
 }
 
 TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesOpening) {
-  EXPECT_FALSE(ParseString("server  location / { expires 30d; } }"));
+  EXPECT_FALSE(ParseString("server  location / { expires 30d; } }"))
+    << "Statements with a missing opening curly brace should not be accepted";
 }
 
 TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesClosing) {
-  EXPECT_FALSE(ParseString("server { location / { expires 30d; } "));
+  EXPECT_FALSE(ParseString("server { location / { expires 30d; } "))
+    << "Statements with a missing closing curly brace should not be accepted";
 }
 
 TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesNestedOpening) {
-  EXPECT_FALSE(ParseString("server { location /  expires 30d; } }"));
+  EXPECT_FALSE(ParseString("server { location /  expires 30d; } }"))
+    << "Nested statedments with a missing opening curly brace should not be accepted";
 }
 
 // A blank config or one with only comments is a useless config
 TEST_F(NginxStringConfigTest, BlankConfig) {
-  EXPECT_FALSE(ParseString(""));
+  EXPECT_FALSE(ParseString(""))
+    << "Config files with no contents should not be accepted";
 }
 
 TEST_F(NginxStringConfigTest, CommentsOnlyConfig) {
-  EXPECT_FALSE(ParseString("# This comment does nothing"));
+  EXPECT_FALSE(ParseString("# This comment does nothing"))
+    << "Config files with only comments should not be accepted";
 }
 
 // Whole-module checks
@@ -76,11 +81,13 @@ TEST(NginxConfigTest, ToString) {
   NginxConfigStatement statement;
   statement.tokens_.push_back("foo");
   statement.tokens_.push_back("bar");
-  EXPECT_EQ(statement.ToString(0), "foo bar;\n");
+  EXPECT_EQ(statement.ToString(0), "foo bar;\n")
+    << "NginxConfigStatement::ToString() output does not match statement contents";
 }
 
 TEST(NginxConfigParser, DoubleVhostConfig) {
   NginxConfigParser parser;
   NginxConfig out_config_;
-  EXPECT_TRUE(parser.Parse("two_hosts_config", &out_config_));
+  EXPECT_TRUE(parser.Parse("two_hosts_config", &out_config_))
+    << "Config file with 2 vhosts should parse";
 }
