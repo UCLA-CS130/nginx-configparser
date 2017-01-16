@@ -55,8 +55,19 @@ TEST_F(NginxStringConfigTest, NestedConfig) {
     << "Child block should be parsed properly for nested NginxConfig";
 }
 
-// TODO: Unmatched curly braces {}: +1 for {, -1 for }
-// TODO: Comments in a config file: # This is a comment
+TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesOpening) {
+  EXPECT_FALSE(ParseString("server  location / { expires 30d; } }"));
+}
+
+TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesClosing) {
+  EXPECT_FALSE(ParseString("server { location / { expires 30d; } "));
+}
+
+TEST_F(NginxStringConfigTest, UnmatchedCurlyBracesNestedOpening) {
+  EXPECT_FALSE(ParseString("server { location /  expires 30d; } }"));
+}
+
+// TODO: A blank config or one with only comments is a useless config
 // TODO: 2 levels of nesting: foo { bar { choo }}
 // TODO: There may be other bugs
 
