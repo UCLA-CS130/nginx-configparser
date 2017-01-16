@@ -129,7 +129,7 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
         *value += c;
         continue;
       case TOKEN_STATE_TOKEN_TYPE_NORMAL:
-        if (c == ' ' || c == '\t' || c == '\n' || c == '\t' ||
+        if (c == ' ' || c == '\t' || c == '\n' ||
             c == ';' || c == '{' || c == '}') {
           input->unget();
           return TOKEN_TYPE_NORMAL;
