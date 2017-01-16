@@ -1,0 +1,17 @@
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Unignore config files
+!*_config
+
+### Above combination will ignore all files without extension ###
+# From http://stackoverflow.com/questions/5711120/gitignore-without-binary-files
+
+*.a
+*.o
