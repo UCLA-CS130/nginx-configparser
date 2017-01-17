@@ -1,0 +1,5 @@
+.cproject
+.project,
+config_parser
+config_parser.dSYM/
+... run git status
