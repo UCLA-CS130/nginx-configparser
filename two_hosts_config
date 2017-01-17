@@ -1,0 +1,13 @@
+server {
+    listen          80;
+    server_name     domain.com *.domain.com;
+    return          301 $scheme://www.domain.com$request_uri;
+ }
+
+server {
+    listen          80;
+    server_name     www.domain.com;
+
+    index           index.html;
+    root            /home/domain.com;
+}
