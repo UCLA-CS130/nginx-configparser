@@ -43,20 +43,20 @@ TEST(FileParsingTest, SimpleConfig) {
 
 TEST_F(NginxStringConfigTest, ValidSimpleStatement) {
     EXPECT_TRUE(ParseString("foo bar;")); 
-    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statements"; 
+    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statement"; 
     EXPECT_EQ("foo", GetToken(0,0)); 
 }
 
 TEST_F(NginxStringConfigTest, ValidStatementWhitespace) {
     EXPECT_TRUE(ParseString("foo             bar;")); 
-    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statements"; 
+    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statement"; 
     EXPECT_EQ("foo", GetToken(0,0));
     EXPECT_EQ("bar", GetToken(0,1)); 
 }
 
 TEST_F(NginxStringConfigTest, ValidStatementTab) {
     EXPECT_TRUE(ParseString("foo	bar;")); 
-    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statements"; 
+    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statement"; 
     EXPECT_EQ("foo", GetToken(0,0));
     EXPECT_EQ("bar", GetToken(0,1)); 
 }
@@ -87,8 +87,11 @@ TEST_F(NginxStringConfigTest, InvalidStatementMultipleSemiColon) {
     ASSERT_FALSE(ParseString("foo bar;;")); 
 }
 
-TEST_F(NginxStringConfigTest, InvalidStatementUnblancedNested) {
+TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedNested_1) {
     ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; }")); 
 }
 
+TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedNested_2) {
+    ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; { {")); 
+}
 
