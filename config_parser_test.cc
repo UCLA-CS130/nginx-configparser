@@ -36,7 +36,7 @@ TEST(FileParsingTest, SimpleConfig) {
 
   bool success = parser.Parse("example_config", &out_config);
 
-  EXPECT_TRUE(success);
+  EXPECT_TRUE(success) << "Valid config files should be parsed successfully";
   EXPECT_EQ(2, out_config.statements_.size());
   EXPECT_EQ(3, out_config.statements_[1]->child_block_->statements_.size());
 }
@@ -48,14 +48,14 @@ TEST_F(NginxStringConfigTest, ValidSimpleStatement) {
 }
 
 TEST_F(NginxStringConfigTest, ValidStatementWhitespace) {
-    EXPECT_TRUE(ParseString("foo             bar;")); 
-    EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statement"; 
+    EXPECT_TRUE(ParseString("foo             bar;"))  << "Config statements with additional white space should be parsed successfully";
+    EXPECT_EQ(1, out_config_.statements_.size()); 
     EXPECT_EQ("foo", GetToken(0,0));
     EXPECT_EQ("bar", GetToken(0,1)); 
 }
 
 TEST_F(NginxStringConfigTest, ValidStatementTab) {
-    EXPECT_TRUE(ParseString("foo	bar;")); 
+    EXPECT_TRUE(ParseString("foo	bar;")) << "Config statements with tabbing should be parsed successfully";
     EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statement"; 
     EXPECT_EQ("foo", GetToken(0,0));
     EXPECT_EQ("bar", GetToken(0,1)); 
@@ -71,15 +71,15 @@ TEST_F(NginxStringConfigTest, ValidStatementNested) {
 }
 
 TEST_F(NginxStringConfigTest, ValidEmptyConfig) {
-    ASSERT_TRUE(ParseString(""));
+    ASSERT_TRUE(ParseString("")) << "Empty config files should still be parseable";
 }
 
 TEST_F(NginxStringConfigTest, ValidMultipleNestedConfigs) {
-    ASSERT_TRUE(ParseString("foo bar; server { foo bar; http {foo bar;} }"));
+    ASSERT_TRUE(ParseString("foo bar; server { foo bar; http {foo bar;} }")) << "Config statements with multiple child blocks should be parsed successfully";
 }
 
 TEST_F(NginxStringConfigTest, ValidEmptyBlockStatement) {
-    ASSERT_TRUE(ParseString("foo bar; server {}")); 
+    ASSERT_TRUE(ParseString("foo bar; server {}")) << "Empty config blocks should be parsed successfully";
 }
 
 TEST_F(NginxStringConfigTest, InvalidSimpleStatement) {
@@ -91,11 +91,11 @@ TEST_F(NginxStringConfigTest, InvalidStatementMultipleSemiColon) {
 }
 
 TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedBraces_1) {
-    ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; }")); 
+    ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; }")) << "Curly braces must be balanced"; 
 }
 
 TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedBraces_2) {
-    ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; { {")); 
+    ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; { {")) << "Curly braces must be balanced";
 }
 
 
