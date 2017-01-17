@@ -133,6 +133,9 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
           input->unget();
           return TOKEN_TYPE_NORMAL;
         }
+        if (c == '\'' || c == '\"' ) {
+          return TOKEN_TYPE_ERROR;
+        }
         *value += c;
         continue;
     }
@@ -149,6 +152,8 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
 
 bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   std::stack<NginxConfig*> config_stack;
+  std::stack<TokenType> block_balancer;  //matches block start tokens with block end tokens 
+                                          //TODO: extend to parenthesis
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
@@ -189,26 +194,36 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
-    } else if (token_type == TOKEN_TYPE_START_BLOCK) {
+    } else if (token_type == TOKEN_TYPE_START_BLOCK) { 
       if (last_token_type != TOKEN_TYPE_NORMAL) {
         // Error.
         break;
       }
+      block_balancer.push(TOKEN_TYPE_START_BLOCK);  //push to block_balancer
       NginxConfig* const new_config = new NginxConfig;
       config_stack.top()->statements_.back().get()->child_block_.reset(
           new_config);
       config_stack.push(new_config);
-    } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
+    } else if (token_type == TOKEN_TYPE_END_BLOCK) { 
+      if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
+          last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }
+      //pop from block_balancer and match brackets
+      block_balancer.pop();
       config_stack.pop();
     } else if (token_type == TOKEN_TYPE_EOF) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
           last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
+      }
+      // before returning, check the token_balancer stack is empty
+      if (block_balancer.size() != 0) {
+        // Error.
+        printf ("Error: Imbalanced block structure\n");
+        return false;
       }
       return true;
     } else {
