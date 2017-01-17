@@ -1,0 +1,10 @@
+server {
+  listen   80;
+  # nest location block
+  location / {
+  	root html;
+  	index index.html index.htm;
+  }
+}
+
+# example inspired by https://www.linode.com/docs/websites/nginx/how-to-configure-nginx
