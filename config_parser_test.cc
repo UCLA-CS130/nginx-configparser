@@ -37,6 +37,7 @@ TEST_F(NginxStringConfigTest, AnotherSimpleConfig) {
   EXPECT_EQ(1, out_config_.statements_.size()) 
     << "Config has one statements";
   EXPECT_EQ(out_config_.statements_[0]->tokens_[0], "foo");
+  EXPECT_EQ(out_config_.statements_[0]->tokens_[1], "bar");
 }
 
 TEST_F(NginxStringConfigTest, InvalidConfig) {
@@ -49,24 +50,19 @@ TEST_F(NginxStringConfigTest, NestedConfig) {
   // TODO: Test the contents of out_config_;
 }
 
-TEST_F(NginxStringConfigTest, UnbalancedEndBraces) {
+TEST_F(NginxStringConfigTest, UnbalancedBraces) {
   EXPECT_FALSE(ParseString("server { listen 80; "));
-}
-
-TEST_F(NginxStringConfigTest, UnbalancedStartBraces) {
   EXPECT_FALSE(ParseString("server listen 80; } "));
 }
 
-TEST_F(NginxStringConfigTest, InvalidConfigSemicolonEndBracket) {
+TEST_F(NginxStringConfigTest, SemicolonIssues) {
   EXPECT_FALSE(ParseString("server { listen 80; }; "));
-}
-
-TEST_F(NginxStringConfigTest, InvalidConfigSemicolonEndQuotation) {
-  EXPECT_FALSE(ParseString("server { listen 80 }; \n \"test\" "));
+  EXPECT_FALSE(ParseString("server { listen 80; } \n \"test\" "));
 }
 
 TEST_F(NginxStringConfigTest, UnbalancedQuotations) {
   EXPECT_FALSE(ParseString("\"bar; "));
+  EXPECT_FALSE(ParseString("\"bar;\";\" "));
 }
 
 TEST_F(NginxStringConfigTest, MultipleBlockConfig) {
