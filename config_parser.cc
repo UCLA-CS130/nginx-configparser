@@ -210,6 +210,12 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
+      else if (config_stack.size() != 1) 
+      {
+          //error, failed to find token type end before reaching end
+        printf ("Unbalanced curly braces\n");
+        return false;
+      }
       return true;
     } else {
       // Error. Unknown token.
