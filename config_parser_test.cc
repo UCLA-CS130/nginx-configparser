@@ -70,13 +70,16 @@ TEST_F(NginxStringConfigTest, ValidStatementNested) {
     EXPECT_EQ("buzz", GetChildStatementToken(1,0,1));
 }
 
-TEST_F(NginxStringConfigTest, ValidStatementEmptyNested) {
+TEST_F(NginxStringConfigTest, ValidEmptyConfig) {
+    ASSERT_TRUE(ParseString(""));
+}
+
+TEST_F(NginxStringConfigTest, ValidMultipleNestedConfigs) {
+    ASSERT_TRUE(ParseString("foo bar; server { foo bar; http {foo bar;} }"));
+}
+
+TEST_F(NginxStringConfigTest, ValidEmptyBlockStatement) {
     ASSERT_TRUE(ParseString("foo bar; server {}")); 
-    EXPECT_EQ(2, out_config_.statements_.size()) << "Config has 2 statements"; 
-    EXPECT_EQ("foo", GetToken(0,0));
-    EXPECT_EQ("bar", GetToken(0,1));
-    EXPECT_EQ("server", GetToken(1,0));
-    EXPECT_EQ("", GetChildStatementToken(1,0,0));
 }
 
 TEST_F(NginxStringConfigTest, InvalidSimpleStatement) {
@@ -87,11 +90,13 @@ TEST_F(NginxStringConfigTest, InvalidStatementMultipleSemiColon) {
     ASSERT_FALSE(ParseString("foo bar;;")); 
 }
 
-TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedNested_1) {
+TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedBraces_1) {
     ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; }")); 
 }
 
-TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedNested_2) {
+TEST_F(NginxStringConfigTest, InvalidStatementUnbalancedBraces_2) {
     ASSERT_FALSE(ParseString("foo bar; foo { foo bar; server { fizz buzz; { {")); 
 }
+
+
 
