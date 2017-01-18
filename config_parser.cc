@@ -200,6 +200,9 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
+        // fixed an error by adding below in class
+        // but comment out for homework, following my partners advice
+        // && last_token_type != TOKEN_TYPE_END_BLOCK) {
         // Error.
         break;
       }

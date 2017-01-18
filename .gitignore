@@ -1,0 +1,8 @@
+
+
+*.a
+*.dSYM
+.cproject
+.project
+config_parser
+config_paser_test
