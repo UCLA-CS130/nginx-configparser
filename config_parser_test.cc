@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <iostream>
 
 #include "gtest/gtest.h"
 #include "config_parser.h"
@@ -13,14 +14,14 @@ TEST(NginxConfigParserTest, SimpleConfig) {
   EXPECT_TRUE(success);
 }
 
-// foo bar;
-TEST(NginxConfigTest, ToString) {
+TEST(NginxConfigTest, ToStringTest) {
 	NginxConfigStatement statement;
 	statement.tokens_.push_back("foo");
 	statement.tokens_.push_back("bar");
 	EXPECT_EQ(statement.ToString(0), "foo bar;\n");
 }
 
+//Test Fixture for passing in a parsed string into the parse function
 class NginxStringConfigTest : public ::testing::Test {
 protected:
 	bool ParseString(const std::string config_string) {
@@ -35,14 +36,23 @@ TEST_F(NginxStringConfigTest, AnotherSimpleConfig) {
 	EXPECT_TRUE(ParseString("foo bar;"));
 	EXPECT_EQ(1, out_config_.statements_.size())
 		<< "Config has one statements";
-	EXPECT_EQ("foo", out_config_.statements_.at(0)->tokens_.at(0));
+	EXPECT_EQ("foo", out_config_.statements_[0]->tokens_[0]);
+	EXPECT_EQ("bar", out_config_.statements_[0]->tokens_[1]);
 }
 
-TEST_F(NginxStringConfigTest, InvalidConfig) {
+TEST_F(NginxStringConfigTest, EmptyConfig) {
+    EXPECT_FALSE(ParseString(";"));
+    EXPECT_FALSE(ParseString(""));
+	EXPECT_FALSE(ParseString("server { }"));
+}
+
+TEST_F(NginxStringConfigTest, InvalidConfigStatement) {
 	EXPECT_FALSE(ParseString("foo bar"));
+	EXPECT_FALSE(ParseString("server { listen 80 }"));
 }
 
-TEST_F(NginxStringConfigTest, NestedConfig) {
-	EXPECT_TRUE(ParseString("server { listen 80; }"));
-	// TODO: Test the contents of out_config_;
+TEST_F(NginxStringConfigTest, NestedConfigStatement) {
+	EXPECT_FALSE(ParseString("server { listen 80; "));
+	EXPECT_EQ(1, out_config_.statements_.size()) << "Config has one statement";
+	EXPECT_EQ("server", out_config_.statements_[0]->tokens_[0]);
 }
