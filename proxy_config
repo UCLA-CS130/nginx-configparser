@@ -1,0 +1,12 @@
+server {
+    listen 8080;
+    root /data/up1;
+
+    location / {
+        proxy_pass http://localhost:8080;
+    }
+
+    location /images/ {
+        root /data;
+    }
+}
