@@ -44,27 +44,28 @@ TEST_F(NginxConfigParserStringTest, SimpleConfig1) {
 	
 }
 
-TEST_F(NginxConfigParserStringTest, InvalidConfig) {
+TEST_F(NginxConfigParserStringTest, SimpleInvalidConfig) {
 
 	EXPECT_FALSE(ParseString("foo bar"));
+	EXPECT_FALSE(ParseString("foo bar;;"));
+	EXPECT_FALSE(ParseString("foo bar {}"));
 	
   
 }
 
 TEST_F(NginxConfigParserStringTest, MultipleStatements) {
 	ASSERT_TRUE(ParseString("foo bar {foo bar; } foobar;"));
-	// printf("adsfsdf%s\n", out_config_.ToString().c_str());
-	EXPECT_EQ(2, out_config_.statements_.size());
+	ASSERT_EQ(2, out_config_.statements_.size());
+	EXPECT_EQ("foo bar {\n  foo bar;\n}\n", out_config_.statements_[0]->ToString(0));
 
 }
 
 TEST_F(NginxConfigParserStringTest, InnerStatement) {
 	ASSERT_TRUE(ParseString("foo bar {foo barr; bar foo;} foobar;"));
-	// printf("adsfsdf%s\n", out_config_.ToString().c_str());
 	ASSERT_EQ(2, out_config_.statements_.size());
-	EXPECT_EQ(2, out_config_.statements_[0].get()->child_block_->statements_.size());
-	//printf("%s\n", out_config_.statements_[0].get()->child_block_->statements_[1]->ToString(0).c_str());
-
+	ASSERT_EQ(2, out_config_.statements_[0]->child_block_->statements_.size());
+	EXPECT_EQ("bar foo;\n", out_config_.statements_[0]->child_block_->statements_[1]->ToString(0));
+	EXPECT_EQ("foo barr;\n", out_config_.statements_[0]->child_block_->statements_[0]->ToString(0));
 }
 
 TEST_F(NginxConfigParserStringTest, CurlyConfig) {
@@ -73,7 +74,7 @@ TEST_F(NginxConfigParserStringTest, CurlyConfig) {
 
 }
 
-TEST_F(NginxConfigParserStringTest, UnbalancedCurlyConfig) {
+TEST_F(NginxConfigParserStringTest, UnbalancedCurlyConfigs) {
 	EXPECT_FALSE(ParseString("foo bar {foo bar; "));
 	EXPECT_FALSE(ParseString("foo bar {foo bar {foo bar; }"));
 	EXPECT_FALSE(ParseString("foo bar foo bar; } } }"));
@@ -84,10 +85,7 @@ TEST_F(NginxConfigParserStringTest, UnbalancedCurlyConfig) {
 TEST_F(NginxConfigParserStringTest, EmbedCurlyConfig) {
 	ASSERT_TRUE(ParseString("foo bar { foo bar {fooo bar;} }"));
 	ASSERT_EQ(1, out_config_.statements_.size());
-	ASSERT_EQ(1, out_config_.statements_[0].get()->child_block_->statements_.size());
-	EXPECT_EQ(1, out_config_.statements_[0].get()->child_block_->statements_[0].get()->child_block_->statements_.size());
-	// printf("%s\n", out_config_.statements_[0].get()->child_block_->statements_[0]->ToString(0).c_str());
-	printf("%s\n", out_config_.statements_[0].get()->child_block_->statements_[0].get()->child_block_->statements_[0]->ToString(0).c_str());
-
-
+	ASSERT_EQ(1, out_config_.statements_[0]->child_block_->statements_.size());
+	EXPECT_EQ(1, out_config_.statements_[0]->child_block_->statements_[0].get()->child_block_->statements_.size());
+	
 }
