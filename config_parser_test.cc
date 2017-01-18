@@ -76,6 +76,8 @@ TEST_F(NginxConfigParserStringTest, CurlyConfig) {
 TEST_F(NginxConfigParserStringTest, UnbalancedCurlyConfig) {
 	EXPECT_FALSE(ParseString("foo bar {foo bar; "));
 	EXPECT_FALSE(ParseString("foo bar {foo bar {foo bar; }"));
+	EXPECT_FALSE(ParseString("foo bar foo bar; } } }"));
+
 
 }
 
