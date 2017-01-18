@@ -223,7 +223,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
     } else {
       // Error. Unknown token.
       break;
-    }
+    }<
     last_token_type = token_type;
   }
 
