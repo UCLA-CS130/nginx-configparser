@@ -1,0 +1,7 @@
+*.o
+*.a
+*.dSYM
+.cproject
+.project
+config_parser
+config_parser_test
