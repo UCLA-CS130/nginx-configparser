@@ -9,3 +9,13 @@ TEST(NginxConfigParserTest, SimpleConfig) {
 
   EXPECT_TRUE(success);
 }
+
+/* New test for FastCGIConfig */
+TEST(NginxConfigParserTest, FastCGIConfig) {
+  NginxConfigParser parser;
+  NginxConfig out_config;
+
+  bool success = parser.Parse("fastCGI_config", &out_config);
+
+  EXPECT_TRUE(success);
+}
