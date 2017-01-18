@@ -205,6 +205,10 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
+	  if (config_stack.size() == 1) {
+		  // Error - unexpected }
+		  break;
+	  }
       config_stack.pop();
     } else if (token_type == TOKEN_TYPE_EOF) {
       if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
@@ -212,6 +216,10 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
+	  if (config_stack.size() != 1) {
+		  // Error - expected more }
+		  break;
+	  }
       return true;
     } else {
       // Error. Unknown token.
