@@ -1,0 +1,7 @@
+
+.DS_Store
+config_parser
+config_parser.dSYM/
+config_parser_test
+*.o
+*.a
