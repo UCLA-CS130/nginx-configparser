@@ -9,3 +9,32 @@ TEST(NginxConfigParserTest, SimpleConfig) {
 
   EXPECT_TRUE(success);
 }
+
+class NginxParserTest : public ::testing::Test {
+protected:
+  NginxConfigParser parser;
+  NginxConfig output;
+  bool parse(const std::string input){
+    std::stringstream straem(input);
+    return(parser.Parse(&straem, &output));
+  }
+};
+  
+TEST_F(NginxParserTest, UnequalBraces){
+  EXPECT_TRUE(parse("server {listen 80;}"));
+  EXPECT_FALSE(parse("server {listen 80;"));
+  //FIXED:
+    //The above passes, but should not. Is a bug to fix.
+}
+
+TEST_F(NginxParserTest, EmptyInput){
+  EXPECT_TRUE(parse(""));
+}
+
+TEST(NginxParserTest, ToString){
+  NginxConfigStatement s;
+  s.tokens_.push_back("foo");
+  s.tokens_.push_back("bar");
+  //EXPECT_EQ(s.ToString(0), "foo bar;\n");
+  //The above doesn't pass, but should. (TODO).
+}

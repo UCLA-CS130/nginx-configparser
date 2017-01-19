@@ -150,6 +150,7 @@ NginxConfigParser::TokenType NginxConfigParser::ParseToken(std::istream* input,
 bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   std::stack<NginxConfig*> config_stack;
   config_stack.push(config);
+  printf("%d", int(config_stack.size()));
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
   while (true) {
@@ -210,7 +211,10 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
-      return true;
+      if(config_stack.size() == 1)
+	return true;
+      else
+	break;
     } else {
       // Error. Unknown token.
       break;
