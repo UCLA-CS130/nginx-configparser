@@ -12,6 +12,15 @@ TEST(NginxConfigParserTest, SimpleConfig) {
   EXPECT_TRUE(success);
 }
 
+TEST(NginxConfigParserTest, BadConfig) {
+  NginxConfigParser parser;
+  NginxConfig out_config;
+
+  bool success = parser.Parse("bad_example_config", &out_config);
+
+  EXPECT_FALSE(success);
+}
+
 class NginxStringConfigTest : public ::testing::Test {
 protected:
 	bool ParseString(const std::string config_string) {
@@ -22,8 +31,36 @@ protected:
 	NginxConfig out_config_;
 };
 
+TEST_F(NginxStringConfigTest, SimpleStatement) {
+	EXPECT_TRUE(ParseString("foo bar;"));
+}
+
+TEST_F(NginxStringConfigTest, SimpleStatementWithBlock) {
+	EXPECT_TRUE(ParseString("foo { bar; }"));
+}
+
+TEST_F(NginxStringConfigTest, Comment) {
+	EXPECT_TRUE(ParseString("foo; #hey\n bar;"));
+}
+
 TEST_F(NginxStringConfigTest, InvalidConfig) {
 	EXPECT_FALSE(ParseString("foo bar"));
+}
+
+TEST_F(NginxStringConfigTest, EmptyBlock) {
+	EXPECT_TRUE(ParseString("foo {} "));
+}
+
+TEST_F(NginxStringConfigTest, StartWithBlock) {
+	EXPECT_FALSE(ParseString("{} "));
+}
+
+TEST_F(NginxStringConfigTest, BlockWithoutToken) {
+	EXPECT_FALSE(ParseString("foo; {}"));
+}
+
+TEST_F(NginxStringConfigTest, MultipleStatements) {
+	EXPECT_TRUE(ParseString("foo; bar { baz; }"));
 }
 
 TEST_F(NginxStringConfigTest, NestedConfigs) {
