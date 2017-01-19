@@ -33,7 +33,22 @@ protected:
 
 TEST_F(NginxStringConfigTest, SimpleStatement) {
 	EXPECT_TRUE(ParseString("foo bar;"));
+        EXPECT_EQ(1, out_config_.statements_.size());
+	EXPECT_EQ("foo", out_config_.statements_[0]->tokens_[0]);
 }
+
+TEST_F(NginxStringConfigTest, TwoStatementConfig) {
+	EXPECT_TRUE(ParseString("foo bar; foo { bar; }"));
+        EXPECT_EQ(2, out_config_.statements_.size());
+	EXPECT_EQ("foo", out_config_.statements_[1]->tokens_[0]);
+}
+
+TEST_F(NginxStringConfigTest, ToString) {
+	std::string sample_string = "foo bar; foo { bar; }";
+	EXPECT_TRUE(ParseString(sample_string));
+        EXPECT_EQ("foo bar;\n", out_config_.statements_[0]->ToString(0));
+}
+
 
 TEST_F(NginxStringConfigTest, SimpleStatementWithBlock) {
 	EXPECT_TRUE(ParseString("foo { bar; }"));
