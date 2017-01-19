@@ -212,7 +212,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
       }
       //Check that the config_stack does not have leftover tokens after parsing
       //e.g. a config that has a '{' without the matching '}'
-      if(config_stack.size() == 1){
+      if (config_stack.size() == 1) {
 	return true;
       } else {
 	break;
