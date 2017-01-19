@@ -10,7 +10,7 @@ TEST(NginxConfigTest, ToString)
   statement.tokens_.push_back("bar");
   EXPECT_EQ(statement.ToString(0), "foo bar;\n");
 }
-
+//blah
 TEST(NginxConfigParserTest, SimpleConfig)
 {
   std::string config_string = "foo bar;";
