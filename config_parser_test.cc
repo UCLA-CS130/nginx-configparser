@@ -46,4 +46,5 @@ TEST_F(NginxStringConfigTest,ExtraParameter){//this test shows an error, the par
 
 TEST_F(NginxStringConfigTest,NestedBracket){
 	EXPECT_FALSE(ParseString(" server {{ listen ;}}"));
+}
 
