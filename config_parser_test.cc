@@ -23,19 +23,40 @@ TEST_F(NginxConfigParserTest, NotFoundConfig){
 
 //Uneven brace test cases
 TEST_F(NginxConfigParserTest, twoEndingBracketsInRow) {
-  bool twoEndBracketsInRow = parser.Parse("tests/ex3", &out_config);
+  std::string toParse =
+  "server { # php/fastcgi"
+    "# comment }"
+  "}";
+  std::stringstream config_stream(toParse);
+  bool twoEndBracketsInRow = parser.Parse(&config_stream, &out_config);
     
   EXPECT_FALSE(twoEndBracketsInRow);
 }
 
 TEST_F(NginxConfigParserTest, missingCloseBracket) {
-  bool missingClosingBracket = parser.Parse("tests/ex4", &out_config);
+std::string toParse =
+  "server { # php/fastcgi"
+    "location ~ \.php$ {"
+      "fastcgi_pass   127.0.0.1:1025;"
+  "}";
+
+  std::stringstream config_stream(toParse);
+  bool missingClosingBracket = parser.Parse(&config_stream, &out_config);
   
   EXPECT_FALSE(missingClosingBracket);
 }
 
 TEST_F(NginxConfigParserTest, missingStartBracket) {
-  bool missingStartBracket = parser.Parse("tests/ex5", &out_config);
+  std::string toParse =
+  "server { # php/fastcgi"
+    "location ~ \.php$ "
+     " fastcgi_pass   127.0.0.1:1025;"
+     " }"
+    "root    html;"
+  "}";
+
+  std::stringstream config_stream(toParse);
+  bool missingStartBracket = parser.Parse(&config_stream, &out_config);
   
   EXPECT_FALSE(missingStartBracket);
 }
