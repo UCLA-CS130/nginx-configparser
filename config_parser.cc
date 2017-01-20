@@ -210,14 +210,20 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
-      return true;
+      if( config_stack.size()==1){
+	return true;
+      }else 
+      {
+	break;
+      }
     } else {
       // Error. Unknown token.
       break;
     }
+
     last_token_type = token_type;
   }
-
+  
   printf ("Bad transition from %s to %s\n",
           TokenTypeAsString(last_token_type),
           TokenTypeAsString(token_type));
