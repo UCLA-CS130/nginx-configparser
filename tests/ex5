@@ -1,0 +1,6 @@
+server { # php/fastcgi
+    location ~ \.php$ 
+      fastcgi_pass   127.0.0.1:1025;
+      }
+    root    html;
+  }
