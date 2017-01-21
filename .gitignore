@@ -1,0 +1,5 @@
+*.o
+*.swp
+*.a
+config_parser_test
+config_parser
