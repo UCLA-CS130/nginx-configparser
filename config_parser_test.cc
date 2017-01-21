@@ -37,10 +37,6 @@ TEST_F(NginxStringConfigTest, SimpleValidConfig){
 	EXPECT_TRUE(ParseString("foo bar;"));
 }
 
-TEST_F(NginxStringConfigTest, BlankConfig){
-	EXPECT_TRUE(ParseString(""));
-}
-
 TEST_F(NginxStringConfigTest, NoSemiColonConfig){
 	EXPECT_FALSE(ParseString("foo bar"));
 }
