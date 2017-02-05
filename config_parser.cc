@@ -8,7 +8,6 @@
 //   http://lxr.nginx.org/source/src/core/ngx_conf_file.c
 
 #include <cstdio>
-#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -153,11 +152,7 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
   config_stack.push(config);
   TokenType last_token_type = TOKEN_TYPE_START;
   TokenType token_type;
-
-  // Unmatched curly braces can be checked for using a counter:
-  // +1 for {, -1 for }. the result should be 0, or there is an incomplete pair
-  int braces_counter = 0;
-
+  int num_unmatched_start_paren = 0;
   while (true) {
     std::string token;
     token_type = ParseToken(config_file, &token);
@@ -200,30 +195,26 @@ bool NginxConfigParser::Parse(std::istream* config_file, NginxConfig* config) {
         // Error.
         break;
       }
-      braces_counter++;
+      num_unmatched_start_paren++;
       NginxConfig* const new_config = new NginxConfig;
       config_stack.top()->statements_.back().get()->child_block_.reset(
           new_config);
       config_stack.push(new_config);
     } else if (token_type == TOKEN_TYPE_END_BLOCK) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END) {
+      num_unmatched_start_paren--;
+      if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
+          num_unmatched_start_paren < 0) {
         // Error.
         break;
       }
-      braces_counter--;
       config_stack.pop();
     } else if (token_type == TOKEN_TYPE_EOF) {
-      if (last_token_type != TOKEN_TYPE_STATEMENT_END &&
-          last_token_type != TOKEN_TYPE_END_BLOCK) {
+      if ((last_token_type != TOKEN_TYPE_STATEMENT_END &&
+          last_token_type != TOKEN_TYPE_END_BLOCK) ||
+          num_unmatched_start_paren != 0) {
         // Error.
         break;
       }
-
-      if (braces_counter != 0) {
-        printf("%d pair(s) of unmatched curly braces {}\n", std::abs(braces_counter));
-        return false;
-      }
-
       return true;
     } else {
       // Error. Unknown token.
